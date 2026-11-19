@@ -12,6 +12,8 @@ permissions:
 
 jobs:
   release:
+    # 電腦版只在 asdZzz-coder/food 發布（手機版的倉庫 food-phone-app 跑 android-release.yml）
+    if: github.repository == 'asdZzz-coder/food'
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4

@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- 餐廳收藏 Android 版（.NET MAUI）。資料層與電腦版共用 food\Models、food\Services 裡沒有 WPF 的檔案 -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-android</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>food.Mobile</RootNamespace>
+    <AssemblyName>FoodKeeperMobile</AssemblyName>
+
+    <ApplicationTitle>餐廳收藏</ApplicationTitle>
+    <ApplicationId>com.asdzzzcoder.foodkeeper</ApplicationId>
+    <!-- 版本：CI 依標籤覆寫（ApplicationVersion 是 Android 的 versionCode，必須一直變大：X*10000+Y*100+Z） -->
+    <ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
+    <ApplicationVersion>10000</ApplicationVersion>
+
+    <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
+    <!-- data.json 用反射序列化（共用的 DataStore.cs） -->
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
+  </PropertyGroup>
+
+  <!-- Release 直接輸出 APK（手機下載後點開安裝），不是上架 Google Play 用的 AAB -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <AndroidPackageFormats>apk</AndroidPackageFormats>
+    <AndroidUseAapt2>true</AndroidUseAapt2>
+  </PropertyGroup>
+
+  <!-- 簽章：CI 由 GitHub Secrets 提供同一把金鑰，這樣新版才能直接覆蓋安裝舊版（資料不會不見） -->
+  <PropertyGroup Condition="'$(AndroidSigningKeyStore)' != ''">
+    <AndroidKeyStore>true</AndroidKeyStore>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\food\Models\Restaurant.cs" Link="Shared\Restaurant.cs" />
+    <Compile Include="..\food\Services\CategoryService.cs" Link="Shared\CategoryService.cs" />
+    <Compile Include="..\food\Services\DataStore.cs" Link="Shared\DataStore.cs" />
+    <Compile Include="..\food\Services\ExcelService.cs" Link="Shared\ExcelService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#EA580C" />
+    <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#EA580C" BaseSize="128,128" />
+    <MauiImage Include="Resources\Images\*.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+    <PackageReference Include="ClosedXML" Version="0.105.1" />
+  </ItemGroup>
+
+</Project>

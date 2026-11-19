@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 深色模式 -->
+<resources>
+    <color name="colorPrimary">#F0702A</color>
+    <color name="colorPrimaryDark">#141312</color>
+    <color name="colorAccent">#F0702A</color>
+</resources>
