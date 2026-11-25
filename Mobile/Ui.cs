@@ -25,8 +25,21 @@ public static class Ui
         new Border { Content = content, Padding = pad, StrokeShape = Theme.Round(14), StrokeThickness = 1 }
             .Fill(Theme.Surface).Stroke_(Theme.Line);
 
-    public static Border HeroCard(View content) =>
-        new Border { Content = content, Padding = new Thickness(18, 16), StrokeShape = Theme.Round(18), StrokeThickness = 0 }.Hero();
+    /// <summary>漸層大卡片；可愛主題在右上角放圖案組的裝飾。</summary>
+    public static Border HeroCard(View content)
+    {
+        View inner = content;
+        if (Theme.CuteMode)
+            inner = new Grid
+            {
+                Children =
+                {
+                    content,
+                    new Label { Text = Cute.Set.HeroDeco, FontSize = 24, HorizontalOptions = LayoutOptions.End, VerticalOptions = LayoutOptions.End, InputTransparent = true },
+                },
+            };
+        return new Border { Content = inner, Padding = new Thickness(18, 16), StrokeShape = Theme.Round(18), StrokeThickness = 0 }.Hero();
+    }
 
     public static Border Pill(string text, Pair fg, Pair bg) =>
         new Border
@@ -40,7 +53,7 @@ public static class Ui
     {
         var b = new Button
         {
-            Text = text, FontSize = 14, CornerRadius = 10, HeightRequest = height, Padding = new Thickness(14, 0),
+            Text = text, FontSize = 14, CornerRadius = (int)Theme.R(10), HeightRequest = height, Padding = new Thickness(14, 0),
             FontAttributes = kind is Kind.Accent or Kind.DangerSolid ? FontAttributes.Bold : FontAttributes.None,
             BorderWidth = kind == Kind.Outline ? 1 : 0,
         };
@@ -51,7 +64,7 @@ public static class Ui
             Kind.Danger => (Theme.DangerSoft, Theme.Danger),
             Kind.DangerSolid => (Theme.Danger, Theme.OnAccent),
             Kind.Soft => (Theme.AccentSoft, Theme.Accent),
-            Kind.OnHero => (new Pair(Color.FromArgb("#33FFFFFF"), Color.FromArgb("#33FFFFFF")), Theme.OnHero),
+            Kind.OnHero => (Theme.HeroBtn, Theme.OnHero),
             _ => (Theme.Ghost, Theme.Text),
         };
         b.SetAppThemeColor(Button.BackgroundColorProperty, bg.Light, bg.Dark);
@@ -113,7 +126,8 @@ public static class Ui
             for (int i = 0; i < buttons.Count; i++)
             {
                 var b = buttons[i];
-                var (bg, fg) = i == sel ? (Theme.Surface, Theme.Text) : (Theme.Ghost, Theme.Muted);
+                // 可愛主題：選到的那一格用粉紅底白字
+                var (bg, fg) = i == sel ? (Theme.CuteMode ? (Theme.Accent, Theme.OnAccent) : (Theme.Surface, Theme.Text)) : (Theme.Ghost, Theme.Muted);
                 b.SetAppThemeColor(Button.BackgroundColorProperty, bg.Light, bg.Dark);
                 b.SetAppThemeColor(Button.TextColorProperty, fg.Light, fg.Dark);
                 b.FontAttributes = i == sel ? FontAttributes.Bold : FontAttributes.None;
@@ -123,7 +137,7 @@ public static class Ui
         {
             int k = i;
             grid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
-            var b = new Button { Text = options[i], FontSize = 14, CornerRadius = 8, HeightRequest = 36, Padding = 0 };
+            var b = new Button { Text = options[i], FontSize = 14, CornerRadius = (int)Theme.R(8), HeightRequest = 36, Padding = 0 };
             b.Clicked += (_, _) => { Paint(k); changed(k); };
             buttons.Add(b);
             grid.Add(b, i);
@@ -133,10 +147,11 @@ public static class Ui
         return (box, Paint);
     }
 
+    /// <summary>小節標題；可愛主題前面加圖案組的記號、用粉紅色。</summary>
     public static Label Section(string text) => new Label
     {
-        Text = text, FontSize = 13, FontAttributes = FontAttributes.Bold, Margin = new Thickness(4, 12, 0, 2),
-    }.Fg(Theme.Muted);
+        Text = Theme.CuteMode ? $"{Cute.Set.Section} {text}" : text, FontSize = 13, FontAttributes = FontAttributes.Bold, Margin = new Thickness(4, 12, 0, 2),
+    }.Fg(Theme.CuteMode ? Theme.Accent : Theme.Muted);
 
     /// <summary>頁面底色。</summary>
     public static T Page<T>(this T page, string title) where T : ContentPage
@@ -152,6 +167,9 @@ public static class Ui
         WidthRequest = size, HeightRequest = size, StrokeThickness = 0, StrokeShape = Theme.Round(size * 0.28), VerticalOptions = LayoutOptions.Center,
         Content = new Label { Text = icon, FontSize = size * 0.45, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center }.Fg(fg),
     }.Fill(bg);
+
+    /// <summary>清單上的評分小標籤（★ 4；可愛主題用圖案組的評分圖示）。</summary>
+    public static string RatingTag(int rating) => $"{(Theme.CuteMode ? Cute.Set.Rating : "★")} {rating}";
 
     /// <summary>星星評分的文字（★★★☆☆）。</summary>
     public static string Stars(int rating) => new string('★', Math.Clamp(rating, 0, 5)) + new string('☆', 5 - Math.Clamp(rating, 0, 5));

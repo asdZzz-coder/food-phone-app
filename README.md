@@ -26,6 +26,10 @@
 `Mobile/` 是手機版（.NET MAUI，只有 Android），功能與電腦版相同：三層分類、餐廳清單與搜尋、評分、備註、
 開 Google 地圖、撥電話、Excel 匯出 / 匯入、淺色 / 深色。手機和電腦的資料各自分開，用 Excel 匯出 / 匯入互相搬資料。
 
+手機版另外有「可愛 🎀」主題（更多 → 外觀）：粉嫩配色、圓角更圓，餐廳頭像依名稱猜成食物圖案（拉麵 🍜、火鍋 🍲、咖啡 ☕…），
+還有六組圖案可以換：小動物、甜點、花園、海洋、星空、水果（分頁小圖、分類圖示、評分、對話框、大卡片漸層都跟著換）。
+圖案組與食物關鍵字在 `Mobile/Cute.cs`。換主題或圖案組會重建整個畫面（`App.Rebuild`），因為顏色是建立元件時綁定的。
+
 - 下載：[food-phone-app 的 Releases](https://github.com/asdZzz-coder/food-phone-app/releases/latest) 的 `FoodKeeper-Android-vX.Y.Z.apk`，用手機點開安裝
 - 更新：App 裡「更多 → 檢查更新」，下載新版 APK 覆蓋安裝，資料保留
 - 共用程式：`Mobile.csproj` 直接編譯 `food/Models/Restaurant.cs`、`food/Services/CategoryService.cs`、`DataStore.cs`、`ExcelService.cs`，

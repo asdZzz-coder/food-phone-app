@@ -16,11 +16,9 @@ public class CategoriesPage : TabPage
 
     public CategoriesPage() : base("分類")
     {
-        var top = new Grid { ColumnSpacing = 8, ColumnDefinitions = { new(GridLength.Star), new(GridLength.Auto) } };
-        top.Add(new VerticalStackLayout { Spacing = 2, Children = { Ui.L("分類", 24, bold: true), subText } }, 0);
         var add = Ui.Btn("＋ 新增國家", Ui.Kind.Accent, async () => { if (await Ops.AddCategory(null) != null) Refresh(); }, 40);
-        add.VerticalOptions = LayoutOptions.Center;
-        top.Add(add, 1);
+        var top = Header("分類", 1, subText, add);
+        emptyText.Text = Cute.Empty(emptyText.Text, 0);
 
         Content = new ScrollView
         {

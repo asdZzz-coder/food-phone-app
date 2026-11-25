@@ -86,7 +86,8 @@ public static class Dialogs
             BackgroundColor = Color.FromArgb("#73000000");
             Shell.SetPresentationMode(this, PresentationMode.ModalNotAnimated);
             var head = new Grid { ColumnSpacing = 12, ColumnDefinitions = { new(GridLength.Auto), new(GridLength.Star) } };
-            var iconBox = Ui.IconBox(icon, color.Fg, color.Bg);
+            // 可愛主題：對話框的小圖示換成圖案組的 emoji
+            var iconBox = Ui.IconBox(Cute.DialogIcon(icon), color.Fg, color.Bg);
             ((Label)iconBox.Content!).FontAttributes = FontAttributes.Bold;
             head.Add(iconBox, 0);
             head.Add(new Label { Text = title, FontSize = 18, FontAttributes = FontAttributes.Bold, VerticalOptions = LayoutOptions.Center }.Fg(Theme.Text), 1);

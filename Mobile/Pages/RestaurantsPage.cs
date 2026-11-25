@@ -41,7 +41,7 @@ public class RestaurantsPage : TabPage
         list.Header = new VerticalStackLayout
         {
             Spacing = 12, Padding = new Thickness(16, 16, 16, 4),
-            Children = { new VerticalStackLayout { Spacing = 2, Children = { Ui.L("餐廳收藏", 24, bold: true), subText } }, hero, Dialogs.InputBox(searchGrid), countText },
+            Children = { Header("餐廳收藏", 0, subText), hero, Dialogs.InputBox(searchGrid), countText },
         };
         list.Footer = new BoxView { HeightRequest = 90, Color = Colors.Transparent };
         list.EmptyView = emptyText;
@@ -52,8 +52,8 @@ public class RestaurantsPage : TabPage
 
     View Row()
     {
-        // 左：名稱第一個字的彩色頭像
-        var initial = new Label { FontSize = 18, FontAttributes = FontAttributes.Bold, TextColor = Colors.White, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center };
+        // 左：名稱第一個字的彩色頭像（可愛主題是粉嫩底色加食物圖案）
+        var initial = new Label { FontSize = Theme.CuteMode ? 24 : 18, FontAttributes = FontAttributes.Bold, TextColor = Colors.White, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center };
         initial.SetBinding(Label.TextProperty, static (RestItem i) => i.Initial);
         var avatar = new Border { WidthRequest = 44, HeightRequest = 44, StrokeThickness = 0, StrokeShape = Theme.Round(13), VerticalOptions = LayoutOptions.Start, Content = initial };
         avatar.SetBinding(Border.BackgroundProperty, static (RestItem i) => i.Avatar);
@@ -128,16 +128,16 @@ public class RestaurantsPage : TabPage
         list.ItemsSource = rows;
         countText.Text = rows.Count == 0 ? "" : $"共 {rows.Count} 間 · 點一間可以查看、編輯、開地圖或撥電話";
         emptyText.Text = Data.Categories.Count == 0
-            ? "還沒有任何分類。\n先到「分類」分頁新增一個國家吧！"
+            ? Cute.Empty("還沒有任何分類。\n先到「分類」分頁新增一個國家吧！", 0)
             : keyword.Length > 0
-                ? "找不到符合的餐廳。"
-                : "這裡還沒有餐廳。\n按右下角的「+」新增一間。";
+                ? Cute.Empty("找不到符合的餐廳。", 2)
+                : Cute.Empty("這裡還沒有餐廳。\n按右下角的「+」新增一間。", 1);
     }
 
     static RestItem Item(Restaurant r, string path)
     {
         var detail = string.Join(" · ", new[] { r.Address, r.Phone }.Where(s => !string.IsNullOrWhiteSpace(s)));
-        return new RestItem(r, r.Name, Theme.Initial(r.Name), Theme.Avatar(r.Name), path == "" ? "未分類" : path,
-            detail, detail != "", r.Note.Trim(), r.Note.Trim() != "", $"★ {r.Rating}", r.Rating > 0, Theme.Star.Now, Theme.StarSoft.Now);
+        return new RestItem(r, r.Name, Theme.Initial(r.Name, r.Note), Theme.Avatar(r.Name), path == "" ? "未分類" : path,
+            detail, detail != "", r.Note.Trim(), r.Note.Trim() != "", Ui.RatingTag(r.Rating), r.Rating > 0, Theme.Star.Now, Theme.StarSoft.Now);
     }
 }

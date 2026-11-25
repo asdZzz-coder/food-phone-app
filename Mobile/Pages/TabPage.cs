@@ -10,8 +10,9 @@ public abstract class TabPage : ContentPage
     {
         this.Page(title);
         Shell.SetNavBarIsVisible(this, false);
-        State.Changed += Refresh;
-        if (Application.Current is { } app) app.RequestedThemeChanged += (_, _) => Refresh();
+        // 換成可愛主題時整個畫面會重建，舊的頁面已不在視窗裡，就不再更新
+        State.Changed += () => { if (Window != null) Refresh(); };
+        if (Application.Current is { } app) app.RequestedThemeChanged += (_, _) => { if (Window != null) Refresh(); };
     }
 
     protected override void OnAppearing()
@@ -22,12 +23,28 @@ public abstract class TabPage : ContentPage
 
     public abstract void Refresh();
 
-    /// <summary>頁面最上方的大標題與說明。</summary>
-    protected static View Header(string title, string? sub = null)
+    /// <summary>頁面最上方的大標題與說明（說明可以是會更新的 Label）；可愛主題在標題後加裝飾、右邊放這一頁的小圖。</summary>
+    /// <param name="tab">第幾個分頁（0 = 餐廳、1 = 分類、2 = 更多），決定小圖</param>
+    protected static View Header(string title, int tab, View? sub = null, View? right = null)
     {
-        var s = new VerticalStackLayout { Spacing = 2, Children = { Ui.L(title, 24, bold: true) } };
-        if (sub != null) s.Add(Ui.L(sub, 13, Theme.Muted));
-        return s;
+        // 右邊有按鈕時位置不夠，小圖改放在標題後面
+        var text = Theme.CuteMode && right != null ? $"{title} {Cute.Mascot(tab)}" : Cute.Title(title);
+        var s = new VerticalStackLayout { Spacing = 2, Children = { Ui.L(text, 24, bold: true) } };
+        if (sub != null) s.Add(sub);
+        var grid = new Grid { ColumnSpacing = 8, ColumnDefinitions = { new(GridLength.Star) } };
+        grid.Add(s, 0);
+        if (Theme.CuteMode && right == null)
+        {
+            grid.ColumnDefinitions.Add(new(GridLength.Auto));
+            grid.Add(new Label { Text = Cute.Mascot(tab), FontSize = 40, VerticalOptions = LayoutOptions.Center }, grid.ColumnDefinitions.Count - 1);
+        }
+        if (right != null)
+        {
+            right.VerticalOptions = LayoutOptions.Center;
+            grid.ColumnDefinitions.Add(new(GridLength.Auto));
+            grid.Add(right, grid.ColumnDefinitions.Count - 1);
+        }
+        return grid;
     }
 }
 
@@ -61,6 +78,11 @@ public abstract class SubPage : ContentPage
             var head = new Grid { ColumnSpacing = 10, Padding = new Thickness(12, 10, 16, 6), ColumnDefinitions = { new(GridLength.Auto), new(GridLength.Star) } };
             head.Add(back, 0);
             head.Add(titleLabel, 1);
+            if (Theme.CuteMode)
+            {
+                head.ColumnDefinitions.Add(new(GridLength.Auto));
+                head.Add(new Label { Text = Cute.Set.PageDeco, FontSize = 26, VerticalOptions = LayoutOptions.Center }, 2);
+            }
             var grid = new Grid { RowDefinitions = { new(GridLength.Auto), new(GridLength.Star) } };
             grid.Add(head, 0, 0);
             grid.Add(value, 0, 1);

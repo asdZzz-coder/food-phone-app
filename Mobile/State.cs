@@ -52,7 +52,9 @@ public static class State
         };
 
     /// <summary>國家、縣市、地區的圖示。</summary>
-    public static string LevelIcon(int level) => level switch { 0 => "🌏", 1 => "🏙", _ => "📍" };
+    public static string LevelIcon(int level) => Theme.CuteMode
+        ? Cute.Set.Levels[Math.Clamp(level, 0, 2)]
+        : level switch { 0 => "🌏", 1 => "🏙", _ => "📍" };
 
     public static readonly string[] RatingWords = ["尚未評分", "不推薦", "普通", "還不錯", "好吃", "超推薦！"];
 }
